@@ -1,0 +1,118 @@
+import { IUnitOfWorkRepository } from 'lite-ts-db';
+import { Sequelize, Transaction } from 'sequelize';
+
+import { SequelizeModelPool } from './model-pool';
+
+/**
+ * sequelize工作单元仓储
+ */
+export class SequelizeUnitOfWork implements IUnitOfWorkRepository {
+    /**
+     * 提交后函数
+     */
+    private m_AfterAction: { [key: string]: () => Promise<void>; } = {};
+    /**
+     * 函数
+     */
+    private m_Actons: ((tx: Transaction) => Promise<void>)[] = [];
+
+    /**
+     * 构造函数
+     * 
+     * @param m_Seq Sequelize对象
+     * @param m_SeqModelPool Sequelize模型池
+     */
+    public constructor(
+        private m_Seq: Sequelize,
+        private m_SeqModelPool: SequelizeModelPool,
+    ) { }
+
+    /**
+     * 提交
+     */
+    public async commit() {
+        try {
+            await this.onCommit();
+        } finally {
+            const tasks = Object.values(this.m_AfterAction).map(r => {
+                return r();
+            });
+            await Promise.all(tasks);
+        }
+    }
+
+    /**
+     * 注册提交后函数
+     * 
+     * @param action 函数
+     * @param key 键
+     */
+    public registerAfter(action: () => Promise<void>, key?: string) {
+        key ??= `key-${Object.keys(this.m_AfterAction).length}`;
+        this.m_AfterAction[key] = action;
+    }
+
+    /**
+     * 注册新增
+     * 
+     * @param model 模型
+     * @param entry 实体
+     */
+    public registerAdd(model: string, entry: any) {
+        this.m_Actons.push(async tx => {
+            await this.m_SeqModelPool.get(model).create(entry, {
+                transaction: tx
+            });
+        });
+    }
+
+    /**
+     * 注册删除
+     * 
+     * @param model 模型
+     * @param entry 实体
+     */
+    public registerRemove(model: string, entry: any): void {
+        this.m_Actons.push(async tx => {
+            await this.m_SeqModelPool.get(model).destroy({
+                transaction: tx,
+                where: {
+                    id: entry.id
+                },
+            });
+        });
+    }
+
+    /**
+     * 注册更新
+     * 
+     * @param model 模型
+     * @param entry 实体
+     */
+    public registerSave(model: string, entry: any): void {
+        this.m_Actons.push(async tx => {
+            await this.m_SeqModelPool.get(model).update(entry, {
+                transaction: tx,
+                where: {
+                    id: entry.id
+                },
+            });
+        });
+    }
+
+    /**
+     * 提交事务
+     */
+    protected async onCommit() {
+        const tx = await this.m_Seq.transaction();
+        try {
+            for (const r of this.m_Actons)
+                await r(tx);
+
+            await tx.commit();
+        } catch (ex) {
+            await tx.rollback();
+            throw ex;
+        }
+    }
+}
