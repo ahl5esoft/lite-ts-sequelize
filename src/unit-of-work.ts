@@ -32,7 +32,16 @@ export class SequelizeUnitOfWork implements IUnitOfWorkRepository {
      */
     public async commit() {
         try {
-            await this.onCommit();
+            const tx = await this.m_Seq.transaction();
+            try {
+                for (const r of this.m_Actons)
+                    await r(tx);
+
+                await tx.commit();
+            } catch (ex) {
+                await tx.rollback();
+                throw ex;
+            }
         } finally {
             const tasks = Object.values(this.m_AfterAction).map(r => {
                 return r();
@@ -98,21 +107,5 @@ export class SequelizeUnitOfWork implements IUnitOfWorkRepository {
                 },
             });
         });
-    }
-
-    /**
-     * 提交事务
-     */
-    protected async onCommit() {
-        const tx = await this.m_Seq.transaction();
-        try {
-            for (const r of this.m_Actons)
-                await r(tx);
-
-            await tx.commit();
-        } catch (ex) {
-            await tx.rollback();
-            throw ex;
-        }
     }
 }
