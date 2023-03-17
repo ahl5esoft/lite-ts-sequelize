@@ -14,7 +14,7 @@ export class SequelizeUnitOfWork implements IUnitOfWorkRepository {
     /**
      * 函数
      */
-    private m_Actons: ((tx: Transaction) => Promise<void>)[] = [];
+    private m_Actions: ((tx: Transaction) => Promise<void>)[] = [];
 
     /**
      * 构造函数
@@ -34,7 +34,7 @@ export class SequelizeUnitOfWork implements IUnitOfWorkRepository {
         try {
             const tx = await this.m_Seq.transaction();
             try {
-                for (const r of this.m_Actons)
+                for (const r of this.m_Actions)
                     await r(tx);
 
                 await tx.commit();
@@ -68,7 +68,7 @@ export class SequelizeUnitOfWork implements IUnitOfWorkRepository {
      * @param entry 实体
      */
     public registerAdd(model: string, entry: any) {
-        this.m_Actons.push(async tx => {
+        this.m_Actions.push(async tx => {
             await this.m_SeqModelPool.get(model).create(entry, {
                 transaction: tx
             });
@@ -81,8 +81,8 @@ export class SequelizeUnitOfWork implements IUnitOfWorkRepository {
      * @param model 模型
      * @param entry 实体
      */
-    public registerRemove(model: string, entry: any): void {
-        this.m_Actons.push(async tx => {
+    public registerRemove(model: string, entry: any) {
+        this.m_Actions.push(async tx => {
             await this.m_SeqModelPool.get(model).destroy({
                 transaction: tx,
                 where: {
@@ -98,8 +98,8 @@ export class SequelizeUnitOfWork implements IUnitOfWorkRepository {
      * @param model 模型
      * @param entry 实体
      */
-    public registerSave(model: string, entry: any): void {
-        this.m_Actons.push(async tx => {
+    public registerSave(model: string, entry: any) {
+        this.m_Actions.push(async tx => {
             await this.m_SeqModelPool.get(model).update(entry, {
                 transaction: tx,
                 where: {

@@ -7,7 +7,7 @@ import { defines } from './defines';
  * 
  * @param define 字段定义
  */
-export function Field(define: DataType | ModelAttributeColumnOptions<any>): PropertyDecorator {
+export function SeqelizeField(define: DataType | ModelAttributeColumnOptions<any>): PropertyDecorator {
     return (target: any, field: string) => {
         if (!defines[target.constructor.name])
             defines[target.constructor.name] = {};
