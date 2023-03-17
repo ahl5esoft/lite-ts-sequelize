@@ -5,6 +5,7 @@
     },
     "dependencies": {
         "lite-ts-db": "^1.7.1",
+        "lite-ts-enum": "^1.4.0",
         "sequelize": "^6.29.3"
     },
     "devDependencies": {

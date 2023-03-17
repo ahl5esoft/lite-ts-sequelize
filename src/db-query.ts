@@ -6,16 +6,16 @@ import { SequelizeModelPool } from './model-pool';
 export class SequelizeDbQuery<T> implements IDbQuery<T> {
     public constructor(
         private m_SeqModelPool: SequelizeModelPool,
-        private m_Model: new () => T,
+        private m_Model: string
     ) { }
 
     public async count(where?: WhereOptions<any>) {
-        return await this.m_SeqModelPool.get(this.m_Model.name).count({
+        return await this.m_SeqModelPool.get(this.m_Model).count({
             where
         });
     }
 
-    public async toArray(v?: Partial<DbQueryOption<WhereOptions<any>>>) {
+    public async toArray(v?: DbQueryOption<WhereOptions<any>>) {
         const opt: FindOptions<any> = {};
         if (v?.skip)
             opt.offset = v.skip;
@@ -33,7 +33,7 @@ export class SequelizeDbQuery<T> implements IDbQuery<T> {
             opt.limit = v.take;
         if (v?.where)
             opt.where = v.where;
-        const res = await this.m_SeqModelPool.get(this.m_Model.name).findAll(opt);
+        const res = await this.m_SeqModelPool.get(this.m_Model).findAll(opt);
         return res.map((r: any) => {
             return r.dataValues;
         });

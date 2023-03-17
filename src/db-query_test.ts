@@ -15,7 +15,7 @@ describe('src/db-query.ts', () => {
         it('ok', async () => {
             const dbMock = new Mock<SequelizeModelPool>();
 
-            const self = new Self(dbMock.actual, Config);
+            const self = new Self(dbMock.actual, Config.name);
 
             const modelStatic = new Mock<ModelStatic<any>>();
 
@@ -46,7 +46,7 @@ describe('src/db-query.ts', () => {
                     dataValues: 222
                 }]
             );
-            const self = new Self(dbMock.actual, Config);
+            const self = new Self(dbMock.actual, Config.name);
             const res = await self.toArray();
             deepStrictEqual(res, [222]);
         });

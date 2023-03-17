@@ -15,7 +15,7 @@ Node.js 需要 `v14` 版本以上
 ## 使用
 
 ```typescript
-import { MongoDbFactory } from "lite-ts-sequelize";
+import { SequelizeDbFactory, modelDbOption } from "lite-ts-sequelize";
 
 class TestModel {
   public id: string;
@@ -23,12 +23,15 @@ class TestModel {
 }
 
 async function main() {
-  const dbFactory = new SequelizeDbFactory("mongodb://localhost:27017", {
-    logging: false,
-  });
+  const dbFactory = new SequelizeDbFactory(
+    "mysql://root:localhost:27017/test",
+    {
+      logging: false,
+    }
+  );
 
   // 添加数据
-  await dbFactory.db<TestModel>(TestModel).add({
+  await dbFactory.db<TestModel>(modelDbOption(TestModel)).add({
     id: "id-1",
     name: "name 1",
   });
