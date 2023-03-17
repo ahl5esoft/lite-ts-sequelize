@@ -1,7 +1,6 @@
-import { IDbQuery } from 'lite-ts-db';
+import { DbQueryOption, IDbQuery } from 'lite-ts-db';
 import { FindOptions, WhereOptions } from 'sequelize';
 
-import { IDbQueryOption } from './i-db-query-option';
 import { SequelizeModelPool } from './model-pool';
 
 export class SequelizeDbQuery<T> implements IDbQuery<T> {
@@ -16,7 +15,7 @@ export class SequelizeDbQuery<T> implements IDbQuery<T> {
         });
     }
 
-    public async toArray(v?: Partial<IDbQueryOption<WhereOptions<any>>>) {
+    public async toArray(v?: Partial<DbQueryOption<WhereOptions<any>>>) {
         const opt: FindOptions<any> = {};
         if (v?.skip)
             opt.offset = v.skip;
