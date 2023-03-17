@@ -12,7 +12,7 @@ export class SequelizeDbFactory extends DbFactoryBase {
     }
 
     private m_Seq: Sequelize;
-    protected get seq() {
+    public get seq() {
         this.m_Seq ??= new Sequelize(this.m_Connection, this.m_Options);
         return this.m_Seq;
     }
