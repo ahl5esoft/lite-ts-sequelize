@@ -1,7 +1,7 @@
 // import { deepStrictEqual } from 'assert';
 import { DbModel } from 'lite-ts-db';
 import { Mock } from 'lite-ts-mock';
-import { ModelStatic, Sequelize } from 'sequelize';
+import { ModelStatic, Sequelize, Transaction } from 'sequelize';
 
 import { SequelizeModelPool } from './model-pool';
 import { SequelizeUnitOfWork as Self } from './unit-of-work';
@@ -22,38 +22,24 @@ describe('src/unit-of-work.ts', () => {
                 modelStatic.actual
             );
             modelStatic.expectReturn(
-                r => r.create(undefined),
+                r => r.create(undefined, {}),
                 true
             );
-            const res = self.registerAdd(TestModel.name, {
-                id: '1'
-            });
-            console.log(res);
-
-        });
-    });
-
-    describe('.registerAdd(model: Function, entry: AreaDbModel)', () => {
-        it('ok', async () => {
-
-        });
-    });
-
-    describe('.registerAfter(action: () => Promise<void>, key?: string)', () => {
-        it('ok', async () => {
-
-        });
-    });
-
-    describe('.registerRemove(model: Function, entry: AreaDbModel)', () => {
-        it('ok', async () => {
-
-        });
-    });
-
-    describe('.registerSave(model: Function, entry: AreaDbModel)', () => {
-        it('ok', async () => {
-
+            self.registerAdd(TestModel.name, undefined);
+            const transaction = new Mock<Transaction>();
+            sequelize.expectReturn(
+                r => r.transaction(),
+                transaction.actual
+            );
+            transaction.expectReturn(
+                r => r.commit(),
+                undefined
+            );
+            transaction.expectReturn(
+                r => r.rollback(),
+                undefined
+            );
+            await self.commit();
         });
     });
 });
