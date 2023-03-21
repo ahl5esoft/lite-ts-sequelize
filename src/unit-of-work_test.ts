@@ -1,6 +1,5 @@
-// import { deepStrictEqual } from 'assert';
 import { DbModel } from 'lite-ts-db';
-import { Mock } from 'lite-ts-mock';
+import { Mock, mockAny } from 'lite-ts-mock';
 import { ModelStatic, Sequelize, Transaction } from 'sequelize';
 
 import { SequelizeModelPool } from './model-pool';
@@ -21,11 +20,16 @@ describe('src/unit-of-work.ts', () => {
                 r => r.get(TestModel.name),
                 modelStatic.actual
             );
+            const entry = {
+                entry: {
+                    id: 1
+                }
+            };
             modelStatic.expectReturn(
-                r => r.create(undefined, {}),
+                r => r.create(entry, mockAny),
                 true
             );
-            self.registerAdd(TestModel.name, undefined);
+            self.registerAdd(TestModel.name, entry);
             const transaction = new Mock<Transaction>();
             sequelize.expectReturn(
                 r => r.transaction(),
@@ -33,10 +37,6 @@ describe('src/unit-of-work.ts', () => {
             );
             transaction.expectReturn(
                 r => r.commit(),
-                undefined
-            );
-            transaction.expectReturn(
-                r => r.rollback(),
                 undefined
             );
             await self.commit();
