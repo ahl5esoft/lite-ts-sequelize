@@ -44,8 +44,8 @@ export class SequelizeAreaDbFactory extends DbFactoryBase {
                 const items = await this.m_EnumFactory.build<AreaData>(AreaData).items;
                 s(
                     items.reduce((memo, r) => {
-                        if (r.fullConnectionString[this.m_Name])
-                            memo[r.value] = new SequelizeDbFactory(r.fullConnectionString[this.m_Name], this.m_Options);
+                        if (r.subFullConnection[this.m_Name])
+                            memo[r.value] = new SequelizeDbFactory(r.subFullConnection[this.m_Name], this.m_Options);
 
                         return memo;
                     }, {})
