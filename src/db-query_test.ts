@@ -11,7 +11,7 @@ class Config {
 }
 
 describe('src/db-query.ts', () => {
-    describe('.count(where?: Filter<any>)', () => {
+    describe('.count(where?: WhereOptions<any>)', () => {
         it('ok', async () => {
             const dbMock = new Mock<SequelizeModelPool>();
 
@@ -32,7 +32,7 @@ describe('src/db-query.ts', () => {
         });
     });
 
-    describe('.toArray(v?: Partial<IDbQueryOption<Filter<any>>>)', () => {
+    describe('.toArray(v?: DbQueryOption<WhereOptions<any>>)', () => {
         it('ok', async () => {
             const dbMock = new Mock<SequelizeModelPool>();
             const modelStatic = new Mock<ModelStatic<any>>();

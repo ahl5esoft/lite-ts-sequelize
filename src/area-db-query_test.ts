@@ -1,12 +1,12 @@
 import { strictEqual } from 'assert';
 import { DbFactoryBase, DbOption, IDbQuery, IDbRepository } from 'lite-ts-db';
 import { Mock } from 'lite-ts-mock';
-import { SequelizeAreaDbFactory } from './area-db-factory';
 
+import { SequelizeAreaDbFactory } from './area-db-factory';
 import { AreaDbQuery as Self } from './area-db-query';
 
 describe('src/db-query.ts', () => {
-    describe('.count(where?: Filter<any>)', () => {
+    describe('.count(where?: WhereOptions<any>)', () => {
         it('ok', async () => {
             const sequelizeAreaDbFactory = new Mock<SequelizeAreaDbFactory>();
             const dbOption = new Mock<DbOption>();
