@@ -3,7 +3,7 @@ import { FindOptions, QueryOptions, QueryOptionsWithType, QueryTypes, Sequelize,
 
 import { SequelizeModelPool } from './model-pool';
 
-type SqlQuery = {
+export type SqlQuery = {
     options: QueryOptions | QueryOptionsWithType<QueryTypes.RAW>,
     sql: string;
 };
