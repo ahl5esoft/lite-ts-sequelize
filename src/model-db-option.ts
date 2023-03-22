@@ -21,7 +21,8 @@ export function modelDbOption(model: any): DbOption {
 
             return new SequelizeDbQuery(
                 (dbFactory as SequelizeDbFactory).modelPool,
-                dbRepo.model
+                dbRepo.model,
+                (dbFactory as SequelizeDbFactory).seq
             );
         });
     };
