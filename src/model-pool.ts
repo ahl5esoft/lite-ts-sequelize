@@ -1,6 +1,6 @@
 import { ModelStatic, Sequelize } from 'sequelize';
 
-import { defines } from './defines';
+import { defines, tables } from './defines';
 
 /**
  * Sequelize模型管理
@@ -32,7 +32,9 @@ export class SequelizeModelPool {
                 throw new Error(`缺少模型: ${modelName}`);
 
             this.m_Models[modelName] = this.m_Seq.define(modelName, fields, {
-                timestamps: false
+                timestamps: false,
+                underscored: false,
+                tableName: tables[modelName]
             });
         }
 

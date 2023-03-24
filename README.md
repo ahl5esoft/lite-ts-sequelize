@@ -60,5 +60,19 @@ async function main() {
       skip: 0, // 跳过多少条数据, 默认为 0
       take: 100, // 获取多少条数据
     });
+
+  // sql查询数据
+  await dbFactory
+    .db<TestModel>(modelDbOption(modelDbOption(TestModel)))
+    .query()
+    .toArray({
+      where: {
+        sql: "select * from TestModel where appid = ?",
+        options: {
+          replacements: [],
+          type: QueryTypes.SELECT,
+        },
+      },
+    });
 }
 ```
