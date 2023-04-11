@@ -16,6 +16,8 @@ export class SequelizeUnitOfWork implements IUnitOfWorkRepository {
      */
     private m_Actions: ((tx: Transaction) => Promise<void>)[] = [];
 
+    private m_BulkCreate: { [model: string]: any; } = {};
+
     /**
      * 构造函数
      * 
@@ -34,8 +36,11 @@ export class SequelizeUnitOfWork implements IUnitOfWorkRepository {
         try {
             const tx = await this.m_Seq.transaction();
             try {
-                for (const r of this.m_Actions)
-                    await r(tx);
+                for (const model of Object.keys(this.m_BulkCreate)) {
+                    await this.m_SeqModelPool.get(model).bulkCreate(this.m_BulkCreate[model], {
+                        transaction: tx
+                    });
+                }
 
                 await tx.commit();
             } catch (ex) {
@@ -68,11 +73,8 @@ export class SequelizeUnitOfWork implements IUnitOfWorkRepository {
      * @param entry 实体
      */
     public registerAdd(model: string, entry: any) {
-        this.m_Actions.push(async tx => {
-            await this.m_SeqModelPool.get(model).create(entry, {
-                transaction: tx
-            });
-        });
+        this.m_BulkCreate[model] ??= [];
+        this.m_BulkCreate[model].push(entry);
     }
 
     /**
