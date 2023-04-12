@@ -40,7 +40,6 @@ export class SequelizeUnitOfWork implements IUnitOfWorkRepository {
                     await this.m_SeqModelPool.get(model).bulkCreate(this.m_BulkCreate[model], {
                         transaction: tx
                     });
-                    this.m_BulkCreate[model] = [];
                 }
 
                 for (const r of this.m_Actions)
@@ -56,6 +55,9 @@ export class SequelizeUnitOfWork implements IUnitOfWorkRepository {
                 return r();
             });
             await Promise.all(tasks);
+            
+            this.m_Actions = [];
+            this.m_BulkCreate= {};
         }
     }
 
