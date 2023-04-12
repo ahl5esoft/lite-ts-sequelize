@@ -40,7 +40,11 @@ export class SequelizeUnitOfWork implements IUnitOfWorkRepository {
                     await this.m_SeqModelPool.get(model).bulkCreate(this.m_BulkCreate[model], {
                         transaction: tx
                     });
+                    this.m_BulkCreate[model] = [];
                 }
+
+                for (const r of this.m_Actions)
+                    await r(tx);
 
                 await tx.commit();
             } catch (ex) {
