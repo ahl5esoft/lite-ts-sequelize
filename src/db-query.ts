@@ -9,6 +9,8 @@ type SqlQuery = {
 };
 
 export class SequelizeDbQuery<T> implements IDbQuery<T> {
+    public static reg = /(?:_)(\w)/g;
+
     public constructor(
         private m_SeqModelPool: SequelizeModelPool,
         private m_Model: string,
@@ -40,7 +42,16 @@ export class SequelizeDbQuery<T> implements IDbQuery<T> {
         if (v?.where) {
             const sqlQuery = v.where as SqlQuery;
             if (sqlQuery.sql) {
-                return await this.m_Seq.query(sqlQuery.sql, sqlQuery.options);
+                const result = await this.m_Seq.query(sqlQuery.sql, sqlQuery.options);
+                return result.map(m => {
+                    return Object.keys(m).reduce((memo, r) => {
+                        if (r.includes('_'))
+                            memo[r.replace(SequelizeDbQuery.reg, (_, char) => char.toUpperCase())] = m[r];
+                        else
+                            memo[r] = m[r];
+                        return memo;
+                    }, {});
+                });
             } else {
                 opt.where = v.where;
             }
