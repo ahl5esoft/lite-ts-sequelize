@@ -42,16 +42,15 @@ export class SequelizeDbQuery<T> implements IDbQuery<T> {
         if (v?.where) {
             const sqlQuery = v.where as SqlQuery;
             if (sqlQuery.sql) {
-                const result = await this.m_Seq.query(sqlQuery.sql, sqlQuery.options);
-                return result.map(m => {
-                    return Object.keys(m).reduce((memo, r) => {
-                        if (r.includes('_'))
-                            memo[r.replace(SequelizeDbQuery.reg, (_, char) => char.toUpperCase())] = m[r];
-                        else
-                            memo[r] = m[r];
-                        return memo;
-                    }, {});
-                });
+                const fields = sqlQuery.sql.match(/SELECT (.+) FROM/)[1];
+                const outSql = fields
+                    .split(",")
+                    .map(
+                        (field) =>
+                            ` ${field} AS ${field.replace(/_(\w)/g, (_, p1) => p1.toUpperCase())}`
+                    )
+                    .join(",");
+                return await this.m_Seq.query(sqlQuery.sql.replace(fields, outSql), sqlQuery.options);
             } else {
                 opt.where = v.where;
             }
