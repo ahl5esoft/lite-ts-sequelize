@@ -9,7 +9,7 @@ export function modelDbOption(model: any): DbOption {
     return (dbFactory, dbRepo_) => {
         const dbRepo = dbRepo_ as DbRepository<any>;
         dbRepo.model = typeof model == 'string' ? model : model.ctor ?? model.name;
-        dbRepo.createQueryFunc(() => {
+        dbRepo.createQueryFunc = () => {
             const sequelizeAreaDbFactory = dbFactory as SequelizeAreaDbFactory;
             if (dbRepo.areaNo && sequelizeAreaDbFactory.getAreaDbFactory) {
                 return new AreaDbQuery(
@@ -24,6 +24,6 @@ export function modelDbOption(model: any): DbOption {
                 dbRepo.model,
                 (dbFactory as SequelizeDbFactory).seq
             );
-        });
+        };
     };
 }
