@@ -4,8 +4,8 @@
         "url": "https://github.com/ahl5esoft/lite-ts-sequelize/issues"
     },
     "dependencies": {
-        "lite-ts-db": "^1.7.1",
-        "lite-ts-enum": "^1.4.0",
+        "lite-ts-db": "^1.10.4",
+        "lite-ts-enum": "^3.11.1",
         "sequelize": "^6.29.3"
     },
     "devDependencies": {
