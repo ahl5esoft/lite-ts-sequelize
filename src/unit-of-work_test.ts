@@ -14,19 +14,19 @@ describe('src/unit-of-work.ts', () => {
             const sequelizeModelPool = new Mock<SequelizeModelPool>();
 
             const self = new Self(sequelize.actual, sequelizeModelPool.actual);
-
             const modelStatic = new Mock<ModelStatic<any>>();
+
             sequelizeModelPool.expectReturn(
                 r => r.get(TestModel.name),
                 modelStatic.actual
             );
-            const entry = {
+            const entry = [{
                 entry: {
                     id: 1
                 }
-            };
+            }];
             modelStatic.expectReturn(
-                r => r.create(entry, mockAny),
+                r => r.bulkCreate(entry, mockAny),
                 true
             );
             self.registerAdd(TestModel.name, entry);
@@ -37,6 +37,10 @@ describe('src/unit-of-work.ts', () => {
             );
             transaction.expectReturn(
                 r => r.commit(),
+                undefined
+            );
+            transaction.expectReturn(
+                r => r.rollback(),
                 undefined
             );
             await self.commit();
