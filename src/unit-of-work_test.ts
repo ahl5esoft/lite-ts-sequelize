@@ -20,16 +20,19 @@ describe('src/unit-of-work.ts', () => {
                 r => r.get(TestModel.name),
                 modelStatic.actual
             );
-            const entry = [{
+            modelStatic.expectReturn(
+                r => r.bulkCreate([{
+                    entry: {
+                        id: 1
+                    }
+                }], mockAny),
+                true
+            );
+            self.registerAdd(TestModel.name, {
                 entry: {
                     id: 1
                 }
-            }];
-            modelStatic.expectReturn(
-                r => r.bulkCreate(entry, mockAny),
-                true
-            );
-            self.registerAdd(TestModel.name, entry);
+            });
             const transaction = new Mock<Transaction>();
             sequelize.expectReturn(
                 r => r.transaction(),

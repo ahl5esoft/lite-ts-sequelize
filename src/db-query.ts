@@ -45,13 +45,10 @@ export class SequelizeDbQuery<T> implements IDbQuery<T> {
                 //sql内的仅处理SELECT类型语句
                 if (sqlQuery.options?.type == QueryTypes.SELECT) {
                     const fields = sqlQuery.sql.match(/SELECT (.+) FROM/)[1];
-                    const outSql = fields
-                        .split(",")
-                        .map(
-                            (field) =>
-                                ` ${field} AS ${field.replace(/_(\w)/g, (_, p1) => p1.toUpperCase())}`
-                        )
-                        .join(",");
+                    const outSql = fields.split(',').map(
+                        (field) =>
+                            ` ${field} AS ${field.replace(/_(\w)/g, (_, p1) => p1.toUpperCase())}`
+                    ).join(',');
                     sqlQuery.sql = sqlQuery.sql.replace(fields, outSql);
                 }
                 return await this.m_Seq.query(sqlQuery.sql, sqlQuery.options);
